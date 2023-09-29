@@ -97,7 +97,7 @@ def get_github_token_from_gh() -> str:
     except (subprocess.CalledProcessError, OSError):
         raise GitHubTokenNotFound()
     else:
-        token = r.stdout.strip()
+        token = chomp(r.stdout)
         if token:
             return token
         else:
@@ -116,8 +116,17 @@ def get_github_token_for_hub() -> str:
     except (subprocess.CalledProcessError, OSError):
         raise GitHubTokenNotFound()
     else:
-        token = r.stdout.strip()
+        token = chomp(r.stdout)
         if token:
             return token
         else:
             raise GitHubTokenNotFound()
+
+
+def chomp(s: str) -> str:
+    """Remove a trailing LF, CR LF, or CR from ``s``, if any"""
+    if s.endswith("\n"):
+        s = s[:-1]
+    if s.endswith("\r"):
+        s = s[:-1]
+    return s
