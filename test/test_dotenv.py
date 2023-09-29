@@ -74,3 +74,20 @@ def test_get_github_token_from_custom_dotenv(
     else:
         with pytest.raises(GitHubTokenNotFound):
             get_github_token_from_dotenv("custom.env")
+
+
+def test_get_github_token_from_dotenv_not_exists(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(GitHubTokenNotFound):
+        get_github_token_from_dotenv()
+
+
+def test_get_github_token_from_custom_dotenv_not_exists(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    write_dotenv(Path(".env"), {"GH_TOKEN": "gh", "GITHUB_TOKEN": "github"})
+    with pytest.raises(GitHubTokenNotFound):
+        get_github_token_from_dotenv("custom.env")
