@@ -1,5 +1,29 @@
 """
-Look up GitHub access tokens in various sources
+Retrieve GitHub access tokens from various sources
+
+When writing a Python program for interacting with GitHub's API, you'll likely
+want to use the local user's GitHub access token for authentication.  Asking
+the user to provide the token every time is undesirable, so you'd rather look
+up the token in some well-known storage location.  The problem is, there have
+been so many places to store GitHub tokens supported by different programs over
+the years, and asking your users to migrate to a new one shouldn't be
+necessary.
+
+That's where ``ghtoken`` comes in: it provides a single function for checking
+multiple well-known sources for GitHub access tokens plus separate functions
+for querying individual sources in case you need to combine the queries in
+novel ways.
+
+The following token sources are currently supported:
+
+- ``.env`` files
+- environment variables
+- the gh_ command
+- the hub_ configuration file
+- the ``hub.oauthtoken`` Git config option
+
+.. _gh: https://github.com/cli/cli
+.. _hub: https://github.com/mislav/hub
 
 Visit <https://github.com/jwodder/ghtoken> for more information.
 """
@@ -147,18 +171,18 @@ def get_github_token_for_hub() -> str:
 
 def get_github_token_for_git_hub() -> str:
     """
-    Fetch a GitHub access token from the Git config key ``hub.oauthtoken``,
+    Retrieve a GitHub access token from the Git config key ``hub.oauthtoken``,
     used by the git-hub_ program.  If no value is set, or if the configured
     value is the empty string, `GitHubTokenNotFound` is raised.
 
     If the Git config key ``hub.baseurl`` is also set to a value other than
-    ``"https://api.github.com"``, the retrieved token is assumed to be
-    associated to an instance other than github.com, and so
-    `GitHubTokenNotFound` is raised.
+    ``https://api.github.com``, the retrieved token is assumed to be associated
+    to an instance other than github.com, and so `GitHubTokenNotFound` is
+    raised.
 
     If the retrieved value starts with ``!``, the rest of the value is executed
-    as a shell command, and the standard output (with leading & trailing
-    whitespace stripped) is returned.
+    as a shell command, and the command's standard output (with leading &
+    trailing whitespace stripped) is returned.
 
     .. _git-hub: https://github.com/sociomantic-tsunami/git-hub
     """
