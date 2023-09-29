@@ -1,2 +1,0 @@
-# Python >= 3.7
-python-dotenv >= 0.11, < 2.0
