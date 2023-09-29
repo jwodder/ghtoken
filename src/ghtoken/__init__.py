@@ -6,8 +6,10 @@ Visit <https://github.com/jwodder/ghtoken> for more information.
 
 from __future__ import annotations
 import os
+from pathlib import Path
 import subprocess
 from dotenv import dotenv_values, find_dotenv
+from ruamel.yaml import YAML
 
 __version__ = "0.1.0.dev1"
 __author__ = "John Thorvald Wodder II"
@@ -19,6 +21,7 @@ __all__ = [
     "GitHubTokenNotFound",
     "get_github_token",
     "get_github_token_for_git_hub",
+    "get_github_token_for_hub",
     "get_github_token_from_dotenv",
     "get_github_token_from_environ",
     "get_github_token_from_gh",
@@ -37,6 +40,7 @@ def get_github_token(
     dotenv: bool | str | os.PathLike[str] = True,
     environ: bool = True,
     gh: bool = True,
+    hub: bool = True,
     git_hub: bool = True,
 ) -> str:
     if dotenv is not False:
@@ -56,6 +60,11 @@ def get_github_token(
     if gh:
         try:
             return get_github_token_from_gh()
+        except GitHubTokenNotFound:
+            pass
+    if hub:
+        try:
+            return get_github_token_for_hub()
         except GitHubTokenNotFound:
             pass
     if git_hub:
@@ -102,6 +111,38 @@ def get_github_token_from_gh() -> str:
             return token
         else:
             raise GitHubTokenNotFound()
+
+
+def get_github_token_for_hub() -> str:
+    pathstr = os.environ.get("HUB_CONFIG", "")
+    if pathstr == "":
+        config_dir = os.environ.get("XDG_CONFIG_HOME", "")
+        if config_dir == "":
+            config_dir = str(Path.home() / ".config")
+        xdg_dirs = os.getenv("XDG_CONFIG_DIRS", "")
+        if xdg_dirs == "":
+            xdg_dirs = "/etc/xdg"
+        for d in [config_dir, *xdg_dirs.split(":")]:
+            path = Path(d, "hub")
+            if path.exists():
+                break
+        else:
+            raise GitHubTokenNotFound()
+    else:
+        path = Path(pathstr)
+    try:
+        with path.open() as fp:
+            cfg = YAML(typ="safe").load(fp)
+    except Exception:
+        raise GitHubTokenNotFound()
+    try:
+        token = cfg["github.com"]["oauth_token"]
+    except (TypeError, AttributeError, KeyError):
+        raise GitHubTokenNotFound()
+    if isinstance(token, str) and token != "":
+        return token
+    else:
+        raise GitHubTokenNotFound()
 
 
 def get_github_token_for_git_hub() -> str:
