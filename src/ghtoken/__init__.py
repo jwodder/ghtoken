@@ -136,8 +136,8 @@ def get_github_token_for_hub() -> str:
     except Exception:
         raise GitHubTokenNotFound()
     try:
-        token = cfg["github.com"]["oauth_token"]
-    except (TypeError, AttributeError, KeyError):
+        token = cfg["github.com"][0]["oauth_token"]
+    except (TypeError, AttributeError, LookupError):
         raise GitHubTokenNotFound()
     if isinstance(token, str) and token != "":
         return token
