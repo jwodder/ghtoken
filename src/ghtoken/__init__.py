@@ -1,5 +1,5 @@
 """
-Look up GitHub access token in various sources
+Look up GitHub access tokens in various sources
 
 Visit <https://github.com/jwodder/ghtoken> for more information.
 """
@@ -18,7 +18,7 @@ __url__ = "https://github.com/jwodder/ghtoken"
 __all__ = [
     "GitHubTokenNotFound",
     "get_github_token",
-    "get_github_token_for_hub",
+    "get_github_token_for_git_hub",
     "get_github_token_from_dotenv",
     "get_github_token_from_environ",
     "get_github_token_from_gh",
@@ -37,7 +37,7 @@ def get_github_token(
     dotenv: bool | str | os.PathLike[str] = True,
     environ: bool = True,
     gh: bool = True,
-    hub: bool = True,
+    git_hub: bool = True,
 ) -> str:
     if dotenv is not False:
         if dotenv is True:
@@ -58,9 +58,9 @@ def get_github_token(
             return get_github_token_from_gh()
         except GitHubTokenNotFound:
             pass
-    if hub:
+    if git_hub:
         try:
-            return get_github_token_for_hub()
+            return get_github_token_for_git_hub()
         except GitHubTokenNotFound:
             pass
     raise GitHubTokenNotFound()
@@ -104,7 +104,23 @@ def get_github_token_from_gh() -> str:
             raise GitHubTokenNotFound()
 
 
-def get_github_token_for_hub() -> str:
+def get_github_token_for_git_hub() -> str:
+    """
+    Fetch a GitHub access token from the Git config key ``hub.oauthtoken``,
+    used by the git-hub_ program.  If no value is set, or if the configured
+    value is the empty string, `GitHubTokenNotFound` is raised.
+
+    If the Git config key ``hub.baseurl`` is also set to a value other than
+    ``"https://api.github.com"``, the retrieved token is assumed to be
+    associated to an instance other than github.com, and so
+    `GitHubTokenNotFound` is raised.
+
+    If the retrieved value starts with ``!``, the rest of the value is executed
+    as a shell command, and the standard output (with leading & trailing
+    whitespace stripped) is returned.
+
+    .. _git-hub: https://github.com/sociomantic-tsunami/git-hub
+    """
     try:
         r = subprocess.run(
             ["git", "config", "--get", "hub.oauthtoken"],
@@ -118,9 +134,35 @@ def get_github_token_for_hub() -> str:
     else:
         token = chomp(r.stdout)
         if token:
-            return token
-        else:
-            raise GitHubTokenNotFound()
+            try:
+                r = subprocess.run(
+                    [
+                        "git",
+                        "config",
+                        "--get",
+                        "--default",
+                        "https://api.github.com",
+                        "hub.baseurl",
+                    ],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL,
+                    check=True,
+                )
+            except (subprocess.CalledProcessError, OSError):
+                raise GitHubTokenNotFound()
+            if chomp(r.stdout) == "https://api.github.com":
+                if token.startswith("!"):
+                    return subprocess.run(
+                        token[1:],
+                        shell=True,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                        check=True,
+                    ).stdout.strip()
+                else:
+                    return token
+        raise GitHubTokenNotFound()
 
 
 def chomp(s: str) -> str:
