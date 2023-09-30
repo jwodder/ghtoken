@@ -67,7 +67,7 @@ is performed other than rejecting empty strings.
         hub_oauthtoken: bool = True,
     ) -> str
 
-Look up a GitHub access token by checking various sources (listed below) and
+Retrieve a GitHub access token by checking various sources (listed below) and
 returning the first token found.  Individual sources can be disabled by setting
 the corresponding keyword argument to ``False``.
 
@@ -95,7 +95,7 @@ The sources are as follows, listed in the order in which they are consulted:
     set, ``GH_TOKEN`` takes precedence over ``GITHUB_TOKEN``.
 
 ``gh``
-    Retrieve a GitHub access token stored for the gh_ command by running ``gh
+    Retrieve a GitHub access token stored by the gh_ command by running ``gh
     auth token --hostname github.com``.  If the command fails or outputs an
     empty line, control proceeds to the next enabled source.
 
