@@ -73,9 +73,9 @@ def get_ghtoken(
     hub_oauthtoken: bool = True,
 ) -> str:
     """
-    Retrieve a GitHub access token by checking various sources and returning
-    the first token found.  Individual sources can be disabled by setting the
-    corresponding keyword argument to ``False``.
+    Retrieve a locally-stored GitHub access token by checking various sources
+    and returning the first token found.  Individual sources can be disabled by
+    setting the corresponding keyword argument to ``False``.
 
     The sources are as follows, listed in the order in which they are
     consulted.  Each source is implemented by a dedicated function which can be

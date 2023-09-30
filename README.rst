@@ -67,9 +67,9 @@ is performed other than rejecting empty strings.
         hub_oauthtoken: bool = True,
     ) -> str
 
-Retrieve a GitHub access token by checking various sources (listed below) and
-returning the first token found.  Individual sources can be disabled by setting
-the corresponding keyword argument to ``False``.
+Retrieve a locally-stored GitHub access token by checking various sources
+(listed below) and returning the first token found.  Individual sources can be
+disabled by setting the corresponding keyword argument to ``False``.
 
 The sources are as follows, listed in the order in which they are consulted:
 
@@ -168,3 +168,32 @@ raised.
 Retrieve a GitHub access token from the ``hub.oauthtoken`` Git config option as
 described above.  If no token is found, a ``ghtoken.GHTokenNotFound`` exception
 is raised.
+
+
+Command
+=======
+
+``ghtoken`` also provides a command of the same name for looking up a GitHub
+token from the command line::
+
+    ghtoken [<options>]
+
+``ghtoken`` retrieves the local user's GitHub access token from local storage
+and prints it.  If no token can be found, a message is printed to standard
+error, and the command exits with a nonzero status.
+
+Options
+-------
+
+-E FILE, --env FILE             Use the given file as the ``.env`` file source
+
+--no-dotenv                     Do not consult a ``.env`` file
+
+--no-environ                    Do not consult environment variables
+
+--no-gh                         Do not consult ``gh``
+
+--no-hub                        Do not consult ``hub`` configuration file
+
+--no-hub-oauthtoken             Do not consult ``hub.oauthtoken`` Git config
+                                option
