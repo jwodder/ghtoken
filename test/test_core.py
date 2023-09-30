@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 from typing import Any
 import pytest
-from ghtoken import GitHubTokenNotFound, get_github_token
+from ghtoken import GHTokenNotFound, get_ghtoken
 
 needs_gh = pytest.mark.skipif(shutil.which("gh") is None, reason="gh not installed")
 needs_git = pytest.mark.skipif(shutil.which("git") is None, reason="git not installed")
@@ -41,9 +41,9 @@ def make_hub(tmp_home: Path, **_: Any) -> None:
     )
 
 
-def make_git_hub(tmp_home: Path, **_: Any) -> None:
+def make_hub_oauthtoken(tmp_home: Path, **_: Any) -> None:
     (tmp_home / ".gitconfig").write_text(
-        "[hub]\noauthtoken = git_hub_token\n",
+        "[hub]\noauthtoken = hub_oauthtoken_token\n",
         encoding="us-ascii",
     )
 
@@ -54,72 +54,72 @@ def make_git_hub(tmp_home: Path, **_: Any) -> None:
         ({}, [], None),
         (
             {},
-            [make_dotenv, make_environ, make_gh, make_hub, make_git_hub],
+            [make_dotenv, make_environ, make_gh, make_hub, make_hub_oauthtoken],
             "dotenv_token",
         ),
         (
             {"dotenv": "custom.env"},
-            [make_dotenv_custom, make_environ, make_gh, make_hub, make_git_hub],
+            [make_dotenv_custom, make_environ, make_gh, make_hub, make_hub_oauthtoken],
             "dotenv_custom_token",
         ),
         (
             {"dotenv": "custom.env"},
-            [make_dotenv, make_environ, make_gh, make_hub, make_git_hub],
+            [make_dotenv, make_environ, make_gh, make_hub, make_hub_oauthtoken],
             "environ_token",
         ),
         (
             {},
-            [make_environ, make_gh, make_hub, make_git_hub],
+            [make_environ, make_gh, make_hub, make_hub_oauthtoken],
             "environ_token",
         ),
         (
             {"dotenv": False},
-            [make_dotenv, make_environ, make_gh, make_hub, make_git_hub],
+            [make_dotenv, make_environ, make_gh, make_hub, make_hub_oauthtoken],
             "environ_token",
         ),
         pytest.param(
             {"dotenv": False},
-            [make_dotenv, make_gh, make_hub, make_git_hub],  # type: ignore[list-item]
+            [make_dotenv, make_gh, make_hub, make_hub_oauthtoken],  # type: ignore[list-item]
             "gh_token",
             marks=[needs_gh],
         ),
         pytest.param(
             {},
-            [make_gh, make_hub, make_git_hub],
+            [make_gh, make_hub, make_hub_oauthtoken],
             "gh_token",
             marks=[needs_gh],
         ),
         (
             {"dotenv": False, "environ": False},
-            [make_dotenv, make_hub, make_git_hub],  # type: ignore[list-item]
+            [make_dotenv, make_hub, make_hub_oauthtoken],  # type: ignore[list-item]
             "hub_token",
         ),
         (
             {"dotenv": False, "environ": False, "gh": False},
-            [make_dotenv, make_environ, make_gh, make_hub, make_git_hub],
+            [make_dotenv, make_environ, make_gh, make_hub, make_hub_oauthtoken],
             "hub_token",
         ),
         (
             {},
-            [make_hub, make_git_hub],
+            [make_hub, make_hub_oauthtoken],
             "hub_token",
         ),
         pytest.param(
             {"dotenv": False, "environ": False, "gh": False},
-            [make_dotenv, make_environ, make_gh, make_git_hub],
-            "git_hub_token",
+            [make_dotenv, make_environ, make_gh, make_hub_oauthtoken],
+            "hub_oauthtoken_token",
             marks=[needs_git],
         ),
         pytest.param(
             {"dotenv": False, "environ": False, "gh": False, "hub": False},
-            [make_dotenv, make_environ, make_gh, make_hub, make_git_hub],
-            "git_hub_token",
+            [make_dotenv, make_environ, make_gh, make_hub, make_hub_oauthtoken],
+            "hub_oauthtoken_token",
             marks=[needs_git],
         ),
         pytest.param(
             {},
-            [make_git_hub],
-            "git_hub_token",
+            [make_hub_oauthtoken],
+            "hub_oauthtoken_token",
             marks=[needs_git],
         ),
         (
@@ -133,9 +133,9 @@ def make_git_hub(tmp_home: Path, **_: Any) -> None:
                 "environ": False,
                 "gh": False,
                 "hub": False,
-                "git_hub": False,
+                "hub_oauthtoken": False,
             },
-            [make_dotenv, make_environ, make_gh, make_hub, make_git_hub],
+            [make_dotenv, make_environ, make_gh, make_hub, make_hub_oauthtoken],
             None,
         ),
     ],
@@ -154,7 +154,7 @@ def test_get_github_token(
     for m in makers:
         m(monkeypatch=monkeypatch, tmp_home=tmp_home, tmp_path=tmp_path)
     if token is not None:
-        assert get_github_token(**kwargs) == token
+        assert get_ghtoken(**kwargs) == token
     else:
-        with pytest.raises(GitHubTokenNotFound):
-            get_github_token(**kwargs)
+        with pytest.raises(GHTokenNotFound):
+            get_ghtoken(**kwargs)

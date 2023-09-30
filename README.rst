@@ -55,13 +55,13 @@ API
 
 .. code:: python
 
-    ghtoken.get_github_token(
+    ghtoken.get_ghtoken(
         *,
         dotenv: bool | str | os.PathLike[str] = True,
         environ: bool = True,
         gh: bool = True,
         hub: bool = True,
-        git_hub: bool = True,
+        hub_oauthtoken: bool = True,
     ) -> str
 
 Look up a GitHub access token by checking various sources (listed below) and
@@ -102,8 +102,7 @@ The sources are as follows, listed in the order in which they are consulted:
     Note that, if the ``GH_TOKEN`` or ``GITHUB_TOKEN`` environment variable is
     set to a nonempty string, gh will return the value of the envvar rather
     than returning whatever access token may already be stored, and this
-    happens even if the ``environ`` argument to ``get_github_token()`` is
-    ``False``.
+    happens even if the ``environ`` argument to ``get_ghtoken()`` is ``False``.
 
 ``hub``
     Retrieve a GitHub access token from the hub_ configuration file.  If the
@@ -111,7 +110,7 @@ The sources are as follows, listed in the order in which they are consulted:
     contain a nonempty token for the ``github.com`` domain, control proceeds to
     the next enabled source.
 
-``git_hub``
+``hub_oauthtoken``
     Retrieve a GitHub access token from the Git config key ``hub.oauthtoken``,
     used by the git-hub_ program.  If the key is set to the empty string, or if
     the Git config key ``hub.baseurl`` is set to a value other than
@@ -126,5 +125,5 @@ The sources are as follows, listed in the order in which they are consulted:
 
     .. _git-hub: https://github.com/sociomantic-tsunami/git-hub
 
-If no enabled source returns a token, then a ``ghtoken.GitHubTokenNotFound``
+If no enabled source returns a token, then a ``ghtoken.GHTokenNotFound``
 exception is raised.

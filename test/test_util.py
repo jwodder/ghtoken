@@ -1,6 +1,6 @@
 from __future__ import annotations
 import pytest
-from ghtoken import GitHubTokenNotFound, chomp
+from ghtoken import GHTokenNotFound, chomp
 
 
 @pytest.mark.parametrize(
@@ -26,4 +26,4 @@ def test_chomp(s: str, chomped: str) -> None:
 
 
 def test_str_error() -> None:
-    assert str(GitHubTokenNotFound()) == "GitHub access token not found"
+    assert str(GHTokenNotFound()) == "GitHub access token not found"

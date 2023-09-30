@@ -1,6 +1,6 @@
 from __future__ import annotations
 import pytest
-from ghtoken import GitHubTokenNotFound, get_github_token_from_environ
+from ghtoken import GHTokenNotFound, ghtoken_from_environ
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,7 @@ from ghtoken import GitHubTokenNotFound, get_github_token_from_environ
         ({"GH_TOKEN": "", "GITHUB_TOKEN": ""}, None),
     ],
 )
-def test_get_github_token_from_environ(
+def test_ghtoken_from_environ(
     envvars: dict[str, str], token: str | None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.delenv("GH_TOKEN", raising=False)
@@ -28,7 +28,7 @@ def test_get_github_token_from_environ(
     for k, v in envvars.items():
         monkeypatch.setenv(k, v)
     if token is not None:
-        assert get_github_token_from_environ() == token
+        assert ghtoken_from_environ() == token
     else:
-        with pytest.raises(GitHubTokenNotFound):
-            get_github_token_from_environ()
+        with pytest.raises(GHTokenNotFound):
+            ghtoken_from_environ()

@@ -42,30 +42,30 @@ __license__ = "MIT"
 __url__ = "https://github.com/jwodder/ghtoken"
 
 __all__ = [
-    "GitHubTokenNotFound",
-    "get_github_token",
-    "get_github_token_for_git_hub",
-    "get_github_token_for_hub",
-    "get_github_token_from_dotenv",
-    "get_github_token_from_environ",
-    "get_github_token_from_gh",
+    "GHTokenNotFound",
+    "get_ghtoken",
+    "ghtoken_from_dotenv",
+    "ghtoken_from_environ",
+    "ghtoken_from_gh",
+    "ghtoken_from_hub",
+    "ghtoken_from_hub_oauthtoken",
 ]
 
 ENVVARS = ["GH_TOKEN", "GITHUB_TOKEN"]
 
 
-class GitHubTokenNotFound(Exception):
+class GHTokenNotFound(Exception):
     def __str__(self) -> str:
         return "GitHub access token not found"
 
 
-def get_github_token(
+def get_ghtoken(
     *,
     dotenv: bool | str | os.PathLike[str] = True,
     environ: bool = True,
     gh: bool = True,
     hub: bool = True,
-    git_hub: bool = True,
+    hub_oauthtoken: bool = True,
 ) -> str:
     if dotenv is not False:
         if dotenv is True:
@@ -73,33 +73,33 @@ def get_github_token(
         else:
             path = dotenv
         try:
-            return get_github_token_from_dotenv(path)
-        except GitHubTokenNotFound:
+            return ghtoken_from_dotenv(path)
+        except GHTokenNotFound:
             pass
     if environ:
         try:
-            return get_github_token_from_environ()
-        except GitHubTokenNotFound:
+            return ghtoken_from_environ()
+        except GHTokenNotFound:
             pass
     if gh:
         try:
-            return get_github_token_from_gh()
-        except GitHubTokenNotFound:
+            return ghtoken_from_gh()
+        except GHTokenNotFound:
             pass
     if hub:
         try:
-            return get_github_token_for_hub()
-        except GitHubTokenNotFound:
+            return ghtoken_from_hub()
+        except GHTokenNotFound:
             pass
-    if git_hub:
+    if hub_oauthtoken:
         try:
-            return get_github_token_for_git_hub()
-        except GitHubTokenNotFound:
+            return ghtoken_from_hub_oauthtoken()
+        except GHTokenNotFound:
             pass
-    raise GitHubTokenNotFound()
+    raise GHTokenNotFound()
 
 
-def get_github_token_from_dotenv(path: str | os.PathLike[str] | None = None) -> str:
+def ghtoken_from_dotenv(path: str | os.PathLike[str] | None = None) -> str:
     if path is None:
         path = find_dotenv(usecwd=True)
     de_vars = dotenv_values(path)
@@ -107,18 +107,18 @@ def get_github_token_from_dotenv(path: str | os.PathLike[str] | None = None) -> 
         value = de_vars.get(varname)
         if value is not None and value != "":
             return value
-    raise GitHubTokenNotFound()
+    raise GHTokenNotFound()
 
 
-def get_github_token_from_environ() -> str:
+def ghtoken_from_environ() -> str:
     for varname in ENVVARS:
         value = os.environ.get(varname)
         if value is not None and value != "":
             return value
-    raise GitHubTokenNotFound()
+    raise GHTokenNotFound()
 
 
-def get_github_token_from_gh() -> str:
+def ghtoken_from_gh() -> str:
     try:
         r = subprocess.run(
             ["gh", "auth", "token", "--hostname", "github.com"],
@@ -128,16 +128,16 @@ def get_github_token_from_gh() -> str:
             check=True,
         )
     except (subprocess.CalledProcessError, OSError):
-        raise GitHubTokenNotFound()
+        raise GHTokenNotFound()
     else:
         token = chomp(r.stdout)
         if token:
             return token
         else:
-            raise GitHubTokenNotFound()
+            raise GHTokenNotFound()
 
 
-def get_github_token_for_hub() -> str:
+def ghtoken_from_hub() -> str:
     pathstr = os.environ.get("HUB_CONFIG", "")
     if pathstr == "":
         config_dir = os.environ.get("XDG_CONFIG_HOME", "")
@@ -151,34 +151,33 @@ def get_github_token_for_hub() -> str:
             if path.exists():
                 break
         else:
-            raise GitHubTokenNotFound()
+            raise GHTokenNotFound()
     else:
         path = Path(pathstr)
     try:
         with path.open() as fp:
             cfg = YAML(typ="safe").load(fp)
     except Exception:
-        raise GitHubTokenNotFound()
+        raise GHTokenNotFound()
     try:
         token = cfg["github.com"][0]["oauth_token"]
     except (TypeError, AttributeError, LookupError):
-        raise GitHubTokenNotFound()
+        raise GHTokenNotFound()
     if isinstance(token, str) and token != "":
         return token
     else:
-        raise GitHubTokenNotFound()
+        raise GHTokenNotFound()
 
 
-def get_github_token_for_git_hub() -> str:
+def ghtoken_from_hub_oauthtoken() -> str:
     """
     Retrieve a GitHub access token from the Git config key ``hub.oauthtoken``,
     used by the git-hub_ program.  If no value is set, or if the configured
-    value is the empty string, `GitHubTokenNotFound` is raised.
+    value is the empty string, `GHTokenNotFound` is raised.
 
     If the Git config key ``hub.baseurl`` is also set to a value other than
     ``https://api.github.com``, the retrieved token is assumed to be associated
-    to an instance other than github.com, and so `GitHubTokenNotFound` is
-    raised.
+    to an instance other than github.com, and so `GHTokenNotFound` is raised.
 
     If the retrieved value starts with ``!``, the rest of the value is executed
     as a shell command, and the command's standard output (with leading &
@@ -195,7 +194,7 @@ def get_github_token_for_git_hub() -> str:
             check=True,
         )
     except (subprocess.CalledProcessError, OSError):
-        raise GitHubTokenNotFound()
+        raise GHTokenNotFound()
     else:
         token = chomp(r.stdout)
         if token:
@@ -215,7 +214,7 @@ def get_github_token_for_git_hub() -> str:
                     check=True,
                 )
             except (subprocess.CalledProcessError, OSError):
-                raise GitHubTokenNotFound()
+                raise GHTokenNotFound()
             if chomp(r.stdout) == "https://api.github.com":
                 if token.startswith("!"):
                     return subprocess.run(
@@ -227,7 +226,7 @@ def get_github_token_for_git_hub() -> str:
                     ).stdout.strip()
                 else:
                     return token
-        raise GitHubTokenNotFound()
+        raise GHTokenNotFound()
 
 
 def chomp(s: str) -> str:

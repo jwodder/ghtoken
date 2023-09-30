@@ -4,56 +4,56 @@ import shutil
 import subprocess
 from typing import Any
 import pytest
-from ghtoken import GitHubTokenNotFound, get_github_token_for_git_hub
+from ghtoken import GHTokenNotFound, ghtoken_from_hub_oauthtoken
 
 pytestmark = pytest.mark.skipif(shutil.which("git") is None, reason="git not installed")
 
 
-def test_git_hub_no_token(tmp_home: Path) -> None:  # noqa: U100
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_git_hub()
+def test_hub_oauthtoken_no_token(tmp_home: Path) -> None:  # noqa: U100
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub_oauthtoken()
 
 
-def test_git_hub(tmp_home: Path) -> None:
+def test_hub_oauthtoken(tmp_home: Path) -> None:
     (tmp_home / ".gitconfig").write_text(
         "[hub]\noauthtoken = my_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_git_hub() == "my_token"
+    assert ghtoken_from_hub_oauthtoken() == "my_token"
 
 
-def test_git_hub_empty_token(tmp_home: Path) -> None:
+def test_hub_oauthtoken_empty_token(tmp_home: Path) -> None:
     (tmp_home / ".gitconfig").write_text(
         "[hub]\noauthtoken = \n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_git_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub_oauthtoken()
 
 
-def test_git_hub_whitespace_token(tmp_home: Path) -> None:
+def test_hub_oauthtoken_whitespace_token(tmp_home: Path) -> None:
     (tmp_home / ".gitconfig").write_text(
         '[hub]\noauthtoken = " "\n',
         encoding="us-ascii",
     )
-    assert get_github_token_for_git_hub() == " "
+    assert ghtoken_from_hub_oauthtoken() == " "
 
 
-def test_git_hub_default_baseurl(tmp_home: Path) -> None:
+def test_hub_oauthtoken_default_baseurl(tmp_home: Path) -> None:
     (tmp_home / ".gitconfig").write_text(
         "[hub]\nbaseurl = https://api.github.com\noauthtoken = my_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_git_hub() == "my_token"
+    assert ghtoken_from_hub_oauthtoken() == "my_token"
 
 
-def test_git_hub_custom_baseurl(tmp_home: Path) -> None:
+def test_hub_oauthtoken_custom_baseurl(tmp_home: Path) -> None:
     (tmp_home / ".gitconfig").write_text(
         "[hub]\nbaseurl = https://example.com/github\noauthtoken = my_token\n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_git_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub_oauthtoken()
 
 
 @pytest.mark.parametrize(
@@ -64,7 +64,7 @@ def test_git_hub_custom_baseurl(tmp_home: Path) -> None:
         (" \n", ""),
     ],
 )
-def test_git_hub_shell_token(
+def test_hub_oauthtoken_shell_token(
     stdout: str, token: str, monkeypatch: pytest.MonkeyPatch, tmp_home: Path
 ) -> None:
     from subprocess import run
@@ -88,11 +88,13 @@ def test_git_hub_shell_token(
         encoding="us-ascii",
     )
     monkeypatch.setattr(subprocess, "run", mock_run)
-    assert get_github_token_for_git_hub() == token
+    assert ghtoken_from_hub_oauthtoken() == token
     assert shells == [("foo --bar baz",)]
 
 
-def test_git_hub_shell_error(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
+def test_hub_oauthtoken_shell_error(
+    monkeypatch: pytest.MonkeyPatch, tmp_home: Path
+) -> None:
     from subprocess import run
 
     shells = []
@@ -115,11 +117,11 @@ def test_git_hub_shell_error(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) ->
     )
     monkeypatch.setattr(subprocess, "run", mock_run)
     with pytest.raises(subprocess.CalledProcessError):
-        get_github_token_for_git_hub()
+        ghtoken_from_hub_oauthtoken()
     assert shells == [("foo --bar baz",)]
 
 
-def test_git_hub_custom_baseurl_shell_not_run(
+def test_hub_oauthtoken_custom_baseurl_shell_not_run(
     monkeypatch: pytest.MonkeyPatch, tmp_home: Path
 ) -> None:
     from subprocess import run
@@ -147,6 +149,6 @@ def test_git_hub_custom_baseurl_shell_not_run(
         encoding="us-ascii",
     )
     monkeypatch.setattr(subprocess, "run", mock_run)
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_git_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub_oauthtoken()
     assert shells == []

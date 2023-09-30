@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 import shutil
 import pytest
-from ghtoken import GitHubTokenNotFound, get_github_token_from_gh
+from ghtoken import GHTokenNotFound, ghtoken_from_gh
 
 pytestmark = pytest.mark.skipif(shutil.which("gh") is None, reason="gh not installed")
 
@@ -13,8 +13,8 @@ def test_gh_no_token(
 ) -> None:
     monkeypatch.delenv("GH_TOKEN", raising=False)
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_from_gh()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_gh()
 
 
 def test_gh(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
@@ -26,7 +26,7 @@ def test_gh(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
         "github.com:\n    oauth_token: my_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_from_gh() == "my_token"
+    assert ghtoken_from_gh() == "my_token"
 
 
 def test_gh_whitespace_token(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
@@ -38,4 +38,4 @@ def test_gh_whitespace_token(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) ->
         "github.com:\n    oauth_token: ' '\n",
         encoding="us-ascii",
     )
-    assert get_github_token_from_gh() == " "
+    assert ghtoken_from_gh() == " "

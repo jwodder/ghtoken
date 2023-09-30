@@ -1,7 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 import pytest
-from ghtoken import GitHubTokenNotFound, get_github_token_for_hub
+from ghtoken import GHTokenNotFound, ghtoken_from_hub
 
 
 def test_hub(tmp_home: Path) -> None:
@@ -10,7 +10,7 @@ def test_hub(tmp_home: Path) -> None:
         "github.com:\n- oauth_token: my_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "my_token"
+    assert ghtoken_from_hub() == "my_token"
 
 
 def test_hub_whitespace(tmp_home: Path) -> None:
@@ -19,12 +19,12 @@ def test_hub_whitespace(tmp_home: Path) -> None:
         "github.com:\n- oauth_token: ' '\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == " "
+    assert ghtoken_from_hub() == " "
 
 
 def test_hub_no_config(tmp_home: Path) -> None:  # noqa: U100
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
 
 
 @pytest.mark.parametrize(
@@ -44,8 +44,8 @@ def test_hub_no_config(tmp_home: Path) -> None:  # noqa: U100
 def test_hub_invalid_config(cfg: str, tmp_home: Path) -> None:
     (tmp_home / ".config").mkdir()
     (tmp_home / ".config" / "hub").write_text(cfg, encoding="us-ascii")
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
 
 
 def test_hub_hub_config(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
@@ -59,7 +59,7 @@ def test_hub_hub_config(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "hub_config_token"
+    assert ghtoken_from_hub() == "hub_config_token"
 
 
 def test_hub_hub_config_not_exists(
@@ -71,8 +71,8 @@ def test_hub_hub_config_not_exists(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
 
 
 def test_hub_xdg_config_home(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
@@ -87,7 +87,7 @@ def test_hub_xdg_config_home(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) ->
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "xdg_config_token"
+    assert ghtoken_from_hub() == "xdg_config_token"
 
 
 def test_hub_xdg_config_home_not_exists(
@@ -99,8 +99,8 @@ def test_hub_xdg_config_home_not_exists(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
 
 
 def test_hub_hub_config_xdg_config_home(
@@ -122,7 +122,7 @@ def test_hub_hub_config_xdg_config_home(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "hub_config_token"
+    assert ghtoken_from_hub() == "hub_config_token"
 
 
 def test_hub_hub_config_not_exists_xdg_config_home(
@@ -140,8 +140,8 @@ def test_hub_hub_config_not_exists_xdg_config_home(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
 
 
 def test_hub_xdg_config_dirs(
@@ -159,7 +159,7 @@ def test_hub_xdg_config_dirs(
         "github.com:\n- oauth_token: baz_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "bar_token"
+    assert ghtoken_from_hub() == "bar_token"
 
 
 def test_hub_xdg_config_dirs_default_exists(
@@ -182,7 +182,7 @@ def test_hub_xdg_config_dirs_default_exists(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "default_token"
+    assert ghtoken_from_hub() == "default_token"
 
 
 def test_hub_xdg_config_home_xdg_config_dirs(
@@ -211,7 +211,7 @@ def test_hub_xdg_config_home_xdg_config_dirs(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "xdg_config_token"
+    assert ghtoken_from_hub() == "xdg_config_token"
 
 
 def test_hub_xdg_config_home_not_exists_xdg_config_dirs(
@@ -235,7 +235,7 @@ def test_hub_xdg_config_home_not_exists_xdg_config_dirs(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    assert get_github_token_for_hub() == "bar_token"
+    assert ghtoken_from_hub() == "bar_token"
 
 
 def test_hub_invalid_hub_config_valid_default(
@@ -248,8 +248,8 @@ def test_hub_invalid_hub_config_valid_default(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
 
 
 def test_hub_xdg_config_home_invalid_xdg_config_dirs(
@@ -275,5 +275,5 @@ def test_hub_xdg_config_home_invalid_xdg_config_dirs(
         "github.com:\n- oauth_token: default_token\n",
         encoding="us-ascii",
     )
-    with pytest.raises(GitHubTokenNotFound):
-        get_github_token_for_hub()
+    with pytest.raises(GHTokenNotFound):
+        ghtoken_from_hub()
