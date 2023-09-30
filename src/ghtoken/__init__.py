@@ -35,7 +35,7 @@ import subprocess
 from dotenv import dotenv_values, find_dotenv
 from ruamel.yaml import YAML
 
-__version__ = "0.1.0"
+__version__ = "0.2.0.dev1"
 __author__ = "John Thorvald Wodder II"
 __author_email__ = "ghtoken@varonathe.org"
 __license__ = "MIT"
@@ -271,7 +271,7 @@ def ghtoken_from_hub() -> str:
     else:
         path = Path(pathstr)
     try:
-        with path.open() as fp:
+        with path.open(encoding="utf-8") as fp:
             cfg = YAML(typ="safe").load(fp)
     except Exception:
         raise GHTokenNotFound()

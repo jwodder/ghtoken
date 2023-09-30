@@ -20,6 +20,7 @@
 `GitHub <https://github.com/jwodder/ghtoken>`_
 | `PyPI <https://pypi.org/project/ghtoken/>`_
 | `Issues <https://github.com/jwodder/ghtoken/issues>`_
+| `Changelog <https://github.com/jwodder/ghtoken/blob/master/CHANGELOG.md>`_
 
 When writing a Python program for interacting with GitHub's API, you'll likely
 want to use the local user's GitHub access token for authentication.  Asking
