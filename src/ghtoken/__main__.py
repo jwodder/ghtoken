@@ -56,7 +56,8 @@ def main() -> None:
             hub_oauthtoken=hub_oauthtoken,
         )
     except GHTokenNotFound as e:
-        sys.exit(str(e))
+        print(e, file=sys.stderr)
+        sys.exit(1)
     else:
         print(token)
 
