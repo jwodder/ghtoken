@@ -53,6 +53,9 @@ Installation
 API
 ===
 
+Note: When retrieving GitHub access tokens, no validation of the token format
+is performed other than rejecting empty strings.
+
 .. code:: python
 
     ghtoken.get_ghtoken(
@@ -127,3 +130,41 @@ The sources are as follows, listed in the order in which they are consulted:
 
 If no enabled source returns a token, then a ``ghtoken.GHTokenNotFound``
 exception is raised.
+
+.. code:: python
+
+    ghtoken.ghtoken_from_dotenv(path: str | os.PathLike[str] | None = None) -> str
+
+Retrieve a GitHub access token from an ``.env`` file as described above.  A
+path to a specific file may be supplied.  If no token is found, a
+``ghtoken.GHTokenNotFound`` exception is raised.
+
+.. code:: python
+
+    ghtoken.ghtoken_from_environ() -> str
+
+Retrieve a GitHub access token from environment variables as described above.
+If no token is found, a ``ghtoken.GHTokenNotFound`` exception is raised.
+
+.. code:: python
+
+    ghtoken.ghtoken_from_gh() -> str
+
+Retrieve a GitHub access token from the ``gh`` command as described above.  If
+no token is found, a ``ghtoken.GHTokenNotFound`` exception is raised.
+
+.. code:: python
+
+    ghtoken.ghtoken_from_hub() -> str
+
+Retrieve a GitHub access token from the ``hub`` configuration file as described
+above.  If no token is found, a ``ghtoken.GHTokenNotFound`` exception is
+raised.
+
+.. code:: python
+
+    ghtoken.ghtoken_from_hub_oauthtoken() -> str
+
+Retrieve a GitHub access token from the ``hub.oauthtoken`` Git config option as
+described above.  If no token is found, a ``ghtoken.GHTokenNotFound`` exception
+is raised.
