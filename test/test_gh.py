@@ -23,7 +23,7 @@ def test_gh(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) -> None:
     hosts_file = tmp_home / ".config" / "gh" / "hosts.yml"
     hosts_file.parent.mkdir(parents=True, exist_ok=True)
     hosts_file.write_text(
-        "github.com:\n    oauth_token: my_token\n",
+        "github.com:\n    oauth_token: my_token\n    user: myself\n",
         encoding="us-ascii",
     )
     assert ghtoken_from_gh() == "my_token"
@@ -35,7 +35,7 @@ def test_gh_whitespace_token(monkeypatch: pytest.MonkeyPatch, tmp_home: Path) ->
     hosts_file = tmp_home / ".config" / "gh" / "hosts.yml"
     hosts_file.parent.mkdir(parents=True, exist_ok=True)
     hosts_file.write_text(
-        "github.com:\n    oauth_token: ' '\n",
+        "github.com:\n    oauth_token: ' '\n    user: myself\n",
         encoding="us-ascii",
     )
     assert ghtoken_from_gh() == " "

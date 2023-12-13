@@ -28,7 +28,7 @@ def make_gh(tmp_home: Path, **_: Any) -> None:
     hosts_file = tmp_home / ".config" / "gh" / "hosts.yml"
     hosts_file.parent.mkdir(parents=True, exist_ok=True)
     hosts_file.write_text(
-        "github.com:\n    oauth_token: gh_token\n",
+        "github.com:\n    oauth_token: gh_token\n    user: myself\n",
         encoding="us-ascii",
     )
 
