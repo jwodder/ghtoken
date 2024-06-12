@@ -1,5 +1,5 @@
-v0.2.0 (in development)
------------------------
+v0.1.1 (2024-06-12)
+-------------------
 - Always open hub configuration files using UTF-8 encoding
 - Migrated from setuptools to hatch
 - Drop support for Python 3.7
