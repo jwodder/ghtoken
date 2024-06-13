@@ -19,6 +19,8 @@ def tmp_home(
     monkeypatch.delenv("XDG_DATA_HOME", raising=False)
     monkeypatch.delenv("XDG_RUNTIME_DIR", raising=False)
     monkeypatch.delenv("XDG_STATE_HOME", raising=False)
+    # Unset AppData so that gh doesn't use it for locating its config file:
+    monkeypatch.delenv("AppData", raising=False)
     monkeypatch.setenv("USERPROFILE", str(home))
     monkeypatch.setenv("LOCALAPPDATA", str(home))
     return home

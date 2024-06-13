@@ -1,3 +1,7 @@
+v0.1.2 (in development)
+-----------------------
+- Fix tests when `AppData` is set in the environment
+
 v0.1.1 (2024-06-12)
 -------------------
 - Always open hub configuration files using UTF-8 encoding
