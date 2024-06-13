@@ -1,5 +1,5 @@
-v0.1.2 (in development)
------------------------
+v0.1.2 (2024-06-13)
+-------------------
 - Fix tests when `AppData` is set in the environment
 
 v0.1.1 (2024-06-12)
