@@ -1,4 +1,4 @@
-|repostatus| |ci-status| |coverage| |pyversions| |license|
+|repostatus| |ci-status| |coverage| |pyversions| |conda| |license|
 
 .. |repostatus| image:: https://www.repostatus.org/badges/latest/active.svg
     :target: https://www.repostatus.org/#active
@@ -14,6 +14,10 @@
 
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/ghtoken.svg
     :target: https://pypi.org/project/ghtoken/
+
+.. |conda| image:: https://img.shields.io/conda/vn/conda-forge/ghtoken.svg
+    :target: https://anaconda.org/conda-forge/ghtoken
+    :alt: Conda Version
 
 .. |license| image:: https://img.shields.io/github/license/jwodder/ghtoken.svg
     :target: https://opensource.org/licenses/MIT
