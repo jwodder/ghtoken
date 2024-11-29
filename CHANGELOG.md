@@ -1,3 +1,7 @@
+v0.2.0 (in development)
+-----------------------
+- Support Python 3.13
+
 v0.1.2 (2024-06-13)
 -------------------
 - Fix tests when `AppData` is set in the environment
