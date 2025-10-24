@@ -157,14 +157,12 @@ def test_get_github_token(
         m(monkeypatch=monkeypatch, tmp_home=tmp_home, tmp_path=tmp_path)
     monkeypatch.setattr(sys, "argv", ["ghtoken"] + opts)
     if token is not None:
-        main()
+        assert main() == 0
         out, err = capsys.readouterr()
         assert out == f"{token}\n"
         assert err == ""
     else:
-        with pytest.raises(SystemExit) as excinfo:
-            main()
-        assert excinfo.value.args == (1,)
+        assert main() == 1
         out, err = capsys.readouterr()
         assert out == ""
         assert err == "GitHub access token not found\n"

@@ -4,7 +4,7 @@ import sys
 from . import GHTokenNotFound, __version__, get_ghtoken
 
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Retrieve GitHub access tokens from various sources"
     )
@@ -57,10 +57,11 @@ def main() -> None:
         )
     except GHTokenNotFound as e:
         print(e, file=sys.stderr)
-        sys.exit(1)
+        return 1
     else:
         print(token)
+        return 0
 
 
 if __name__ == "__main__":
-    main()  # pragma: no cover
+    sys.exit(main())  # pragma: no cover
