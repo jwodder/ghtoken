@@ -55,7 +55,7 @@ The following token sources are currently supported:
 
 Installation
 ============
-``ghtoken`` requires Python 3.8 or higher.  Just use `pip
+``ghtoken`` requires Python 3.10 or higher.  Just use `pip
 <https://pip.pypa.io>`_ for Python 3 (You have pip, right?) to install it::
 
     python3 -m pip install ghtoken
