@@ -213,7 +213,7 @@ def ghtoken_from_gh() -> str:
     except (subprocess.CalledProcessError, OSError):
         raise GHTokenNotFound()
     else:
-        token = chomp(r.stdout)
+        token = r.stdout.strip()
         if token:
             return token
         else:
@@ -316,7 +316,7 @@ def ghtoken_from_hub_oauthtoken() -> str:
     except (subprocess.CalledProcessError, OSError):
         raise GHTokenNotFound()
     else:
-        token = chomp(r.stdout)
+        token = r.stdout.strip()
         if token:
             try:
                 r = subprocess.run(
@@ -335,7 +335,7 @@ def ghtoken_from_hub_oauthtoken() -> str:
                 )
             except (subprocess.CalledProcessError, OSError):
                 raise GHTokenNotFound()
-            if chomp(r.stdout) == "https://api.github.com":
+            if r.stdout.strip() == "https://api.github.com":
                 if token.startswith("!"):
                     return subprocess.run(
                         token[1:],
@@ -347,12 +347,3 @@ def ghtoken_from_hub_oauthtoken() -> str:
                 else:
                     return token
         raise GHTokenNotFound()
-
-
-def chomp(s: str) -> str:
-    """Remove a trailing LF, CR LF, or CR from ``s``, if any"""
-    if s.endswith("\n"):
-        s = s[:-1]
-    if s.endswith("\r"):
-        s = s[:-1]
-    return s
